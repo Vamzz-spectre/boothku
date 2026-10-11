@@ -446,17 +446,7 @@ export default function BoothkuPage() {
             </div>
 
             {/* Video Viewfinder with Comic Frame */}
-            <div
-              className="comic-panel"
-              style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: "4/3",
-                overflow: "hidden",
-                background: "#000000",
-                boxShadow: "8px 8px 0px var(--comic-ink)",
-              }}
-            >
+            <div className="comic-camera-viewport">
               <video
                 ref={videoRef}
                 autoPlay
