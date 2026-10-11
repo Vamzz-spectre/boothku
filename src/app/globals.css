@@ -1,21 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cabinet+Grotesk:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
 
 :root {
-  /* Editorial Analog Photobooth Palette */
-  --bg-canvas: #fbf9f5;
-  --bg-surface: #ffffff;
-  --bg-surface-soft: #f4efe6;
-  --bg-dark-viewport: #181716;
-
-  --ink-primary: #1c1917;
-  --ink-secondary: #57534e;
-  --ink-muted: #857f77;
-
-  --accent-terracotta: #c2410c;
-  --accent-terracotta-hover: #9a3412;
-  --accent-amber: #f59e0b;
-  --border-line: #e7e2d7;
-  --border-dark: #292524;
+  /* Vintage / Pop Comic Palette */
+  --comic-bg: #fff8db; /* Kertas komik kuning tua */
+  --comic-panel: #ffffff;
+  --comic-ink: #111111;
+  --comic-yellow: #ffdf00;
+  --comic-red: #ff3344;
+  --comic-blue: #0088ff;
+  --comic-dots: #eddba6;
 }
 
 * {
@@ -26,147 +19,186 @@
 
 body {
   min-height: 100vh;
-  background-color: var(--bg-canvas);
-  color: var(--ink-primary);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--comic-bg);
+  color: var(--comic-ink);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Ben-Day Halftone Dots pattern khas komik cetak klasik */
+  background-image: radial-gradient(var(--comic-dots) 18%, transparent 19%);
+  background-size: 16px 16px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Editorial Title Font */
-.font-display {
-  font-family: 'Cabinet Grotesk', 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: -0.03em;
+.font-comic {
+  font-family: 'Bangers', cursive, sans-serif;
+  letter-spacing: 1.5px;
 }
 
-/* Crisp tactile cards without artificial glows or blur slop */
-.booth-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-line);
-  border-radius: 12px;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+.font-hand {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+}
+
+/* Comic Panel Box (Tebal, miring dikit pas hover, bayangan hitam solid) */
+.comic-panel {
+  background: var(--comic-panel);
+  border: 3.5px solid var(--comic-ink);
+  border-radius: 4px;
+  box-shadow: 6px 6px 0px var(--comic-ink);
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.comic-panel-interactive {
+  background: var(--comic-panel);
+  border: 3.5px solid var(--comic-ink);
+  border-radius: 4px;
+  box-shadow: 6px 6px 0px var(--comic-ink);
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   overflow: hidden;
 }
 
-.booth-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--ink-primary);
-  box-shadow: 0 10px 24px -6px rgba(28, 25, 23, 0.08);
+.comic-panel-interactive:hover {
+  transform: translate(-3px, -3px) rotate(-0.5deg);
+  box-shadow: 9px 9px 0px var(--comic-ink);
 }
 
-.booth-card-selected {
-  border: 2px solid var(--accent-terracotta);
-  background: #fffdfa;
+.comic-panel-interactive:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0px var(--comic-ink);
 }
 
-/* Button system (Honest, tactile, crisp) */
-.btn-solid-primary {
+/* Comic Buttons: Pop art action button */
+.comic-btn-red {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: var(--ink-primary);
+  gap: 10px;
+  background: var(--comic-red);
   color: #ffffff;
-  font-weight: 700;
-  font-size: 0.92rem;
-  padding: 12px 24px;
-  border-radius: 10px;
-  border: 1px solid var(--ink-primary);
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 1px;
+  padding: 12px 32px;
+  border: 3.5px solid var(--comic-ink);
+  border-radius: 6px;
+  box-shadow: 5px 5px 0px var(--comic-ink);
   cursor: pointer;
-  transition: all 0.15s ease;
   text-decoration: none;
+  transition: all 0.1s ease;
+  text-transform: uppercase;
 }
 
-.btn-solid-primary:hover {
-  background: var(--accent-terracotta);
-  border-color: var(--accent-terracotta);
-  transform: translateY(-1px);
+.comic-btn-red:hover {
+  transform: translate(-2px, -2px) rotate(-1deg);
+  box-shadow: 7px 7px 0px var(--comic-ink);
+  background: #ff1f32;
 }
 
-.btn-solid-primary:active {
-  transform: translateY(1px);
+.comic-btn-red:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0px var(--comic-ink);
 }
 
-.btn-outline {
+.comic-btn-yellow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--bg-surface);
-  color: var(--ink-primary);
-  font-weight: 600;
-  font-size: 0.88rem;
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border-line);
+  background: var(--comic-yellow);
+  color: var(--comic-ink);
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  padding: 8px 18px;
+  border: 3px solid var(--comic-ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0px var(--comic-ink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
 }
 
-.btn-outline:hover {
-  background: var(--bg-surface-soft);
-  border-color: var(--ink-secondary);
+.comic-btn-yellow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--comic-ink);
 }
 
-/* Filter Tag Pill */
-.filter-pill {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
+.comic-btn-yellow:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--comic-ink);
+}
+
+.comic-btn-white {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: var(--comic-ink);
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  padding: 8px 18px;
+  border: 3px solid var(--comic-ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0px var(--comic-ink);
   cursor: pointer;
-  background: transparent;
-  border: 1px solid var(--border-line);
-  color: var(--ink-secondary);
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
 }
 
-.filter-pill:hover {
-  border-color: var(--ink-primary);
-  color: var(--ink-primary);
+.comic-btn-white:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--comic-ink);
 }
 
-.filter-pill-active {
-  background: var(--ink-primary);
-  color: #ffffff;
-  border-color: var(--ink-primary);
+/* Comic Speech Bubble / Tag */
+.speech-bubble {
+  position: relative;
+  background: #ffffff;
+  border: 3px solid var(--comic-ink);
+  padding: 8px 16px;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 0.95rem;
+  box-shadow: 3px 3px 0px var(--comic-ink);
+  display: inline-block;
 }
 
-/* Range Sliders */
+/* Comic Sound Effect Sticker (POW, SNAP, BOOM) */
+.comic-sticker {
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.3rem;
+  background: var(--comic-yellow);
+  color: var(--comic-ink);
+  border: 3px solid var(--comic-ink);
+  padding: 4px 12px;
+  transform: rotate(-3deg);
+  box-shadow: 3px 3px 0px var(--comic-ink);
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+/* Range input comic style */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
-  background: #e7e2d7;
-  border-radius: 4px;
+  height: 10px;
+  background: #ffffff;
+  border: 2.5px solid var(--comic-ink);
+  border-radius: 0;
   outline: none;
   margin: 10px 0;
+  box-shadow: 2px 2px 0px var(--comic-ink);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--ink-primary);
+  width: 22px;
+  height: 22px;
+  background: var(--comic-yellow);
+  border: 2.5px solid var(--comic-ink);
+  box-shadow: 2px 2px 0px var(--comic-ink);
   cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: var(--accent-terracotta);
-}
-
-/* Countdown in Viewfinder */
-.viewfinder-countdown {
-  font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: 8rem;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1;
 }
 
 /* Flash overlay */
@@ -181,6 +213,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .flash-active {
-  opacity: 0.92;
+  opacity: 0.95;
   transition: opacity 0.02s ease;
+}
+
+/* Huge Comic Countdown */
+.comic-countdown {
+  font-family: 'Bangers', sans-serif;
+  font-size: 10rem;
+  color: var(--comic-yellow);
+  -webkit-text-stroke: 6px var(--comic-ink);
+  text-shadow: 8px 8px 0px var(--comic-ink);
+  line-height: 1;
+  transform: rotate(-4deg);
+  animation: comicBounce 0.8s infinite;
+}
+
+@keyframes comicBounce {
+  0% { transform: scale(0.8) rotate(-6deg); }
+  50% { transform: scale(1.15) rotate(4deg); }
+  100% { transform: scale(1) rotate(-4deg); }
 }

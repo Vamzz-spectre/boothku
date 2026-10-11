@@ -10,8 +10,8 @@ import {
   Download,
   ChevronLeft,
   RefreshCw,
-  Sliders,
-  Check,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 
 type Stage = "select-template" | "camera" | "review";
@@ -68,7 +68,7 @@ export default function BoothkuPage() {
       }
     } catch (err) {
       console.error("Camera access error:", err);
-      alert("Izin akses kamera diperlukan untuk mengambil foto.");
+      alert("Izin kamera diperlukan!");
     }
   }, [facingMode]);
 
@@ -110,12 +110,12 @@ export default function BoothkuPage() {
     const photoUrl = canvas.toDataURL("image/jpeg", 0.94);
 
     setIsFlashActive(true);
-    setTimeout(() => setIsFlashActive(false), 100);
+    setTimeout(() => setIsFlashActive(false), 120);
 
     setCapturedPhotos((prev) => {
       const next = [...prev, photoUrl];
       if (next.length >= selectedTemplate.requiredPhotos) {
-        setTimeout(() => setStage("review"), 350);
+        setTimeout(() => setStage("review"), 400);
       } else {
         setCurrentSlotIndex(next.length);
       }
@@ -198,15 +198,16 @@ export default function BoothkuPage() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Editorial Header */}
+      {/* COMIC STRIP HEADER */}
       <header
         style={{
-          borderBottom: "1px solid var(--border-line)",
-          background: "var(--bg-surface)",
-          padding: "16px 28px",
+          background: "var(--comic-yellow)",
+          borderBottom: "4px solid var(--comic-ink)",
+          padding: "14px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          boxShadow: "0 4px 0px var(--comic-ink)",
           position: "sticky",
           top: 0,
           zIndex: 100,
@@ -214,45 +215,110 @@ export default function BoothkuPage() {
       >
         <div
           onClick={resetAll}
-          style={{ display: "flex", alignItems: "baseline", gap: 10, cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
         >
-          <span className="font-display" style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--ink-primary)" }}>
-            Boothku.
-          </span>
-          <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Self Photo Studio
+          <div
+            style={{
+              background: "var(--comic-red)",
+              border: "3px solid var(--comic-ink)",
+              boxShadow: "3px 3px 0px var(--comic-ink)",
+              padding: "4px 10px",
+              transform: "rotate(-3deg)",
+            }}
+          >
+            <span className="font-comic" style={{ fontSize: "1.8rem", color: "#ffffff", letterSpacing: 2 }}>
+              BOOTHKU!
+            </span>
+          </div>
+          <span
+            className="comic-sticker"
+            style={{
+              background: "#ffffff",
+              fontSize: "0.85rem",
+              transform: "rotate(2deg)",
+            }}
+          >
+            PHOTO COMIC #01
           </span>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {stage !== "select-template" && (
-            <button onClick={resetAll} className="btn-outline">
-              <RotateCcw size={15} />
-              <span>Ganti Frame</span>
+            <button onClick={resetAll} className="comic-btn-white" style={{ padding: "6px 14px" }}>
+              <RotateCcw size={16} />
+              <span>GANTI FRAME</span>
             </button>
           )}
-          <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--ink-secondary)", background: "var(--bg-surface-soft)", padding: "6px 12px", borderRadius: 8 }}>
-            27 Template Pilihan
-          </span>
+
+          <div
+            className="comic-sticker"
+            style={{
+              background: "var(--comic-red)",
+              color: "#ffffff",
+              fontSize: "0.95rem",
+            }}
+          >
+            POW! 100% FREE
+          </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <div style={{ flex: 1, padding: "36px 24px 60px", maxWidth: 1200, margin: "0 auto", width: "100%" }}>
+      {/* MAIN COMIC STAGE */}
+      <div style={{ flex: 1, padding: "28px 20px 60px", maxWidth: 1200, margin: "0 auto", width: "100%" }}>
         
-        {/* STAGE 1: TEMPLATE GALLERY */}
+        {/* STAGE 1: COMIC ISSUE COVER & TEMPLATES */}
         {stage === "select-template" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-            <div style={{ maxWidth: 640 }}>
-              <h1 className="font-display" style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: 12 }}>
-                Pilih layout strip foto favoritmu.
-              </h1>
-              <p style={{ color: "var(--ink-secondary)", fontSize: "0.98rem", lineHeight: 1.6 }}>
-                Mulai sesi pemotretan langsung dari browser. Semua template siap pakai dengan format cetak photostrip beresolusi tinggi.
-              </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+            {/* Comic Header Title Box */}
+            <div
+              className="comic-panel"
+              style={{
+                padding: "24px 28px",
+                background: "#ffffff",
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+                  <span className="comic-sticker" style={{ background: "var(--comic-blue)", color: "#ffffff", fontSize: "0.9rem" }}>
+                    EDISI TERBARU
+                  </span>
+                  <span className="font-hand" style={{ fontSize: "1rem", color: "var(--comic-red)" }}>
+                    Snap your strip story!
+                  </span>
+                </div>
+                <h1 className="font-comic" style={{ fontSize: "clamp(2.2rem, 5vw, 3.4rem)", lineHeight: 1, margin: 0 }}>
+                  PILIH FRAME KOMIKMU SEKARANG!
+                </h1>
+                <p style={{ fontWeight: 700, fontSize: "0.95rem", color: "#444", marginTop: 8 }}>
+                  Tersedia 27 strip frame estetik. Klik frame favoritmu untuk langsung masuk ke bilik foto kamera!
+                </p>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--comic-yellow)",
+                  border: "3px solid var(--comic-ink)",
+                  boxShadow: "4px 4px 0px var(--comic-ink)",
+                  padding: "10px 18px",
+                  transform: "rotate(2deg)",
+                  textAlign: "center",
+                }}
+              >
+                <div className="font-comic" style={{ fontSize: "1.8rem", color: "var(--comic-red)", lineHeight: 1 }}>
+                  27 FRAMES
+                </div>
+                <div className="font-comic" style={{ fontSize: "0.9rem" }}>
+                  SIAP CETAK HD
+                </div>
+              </div>
             </div>
 
-            {/* Category Filter Pills */}
+            {/* Category Filter Pills (Comic Speech Box Style) */}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {categories.map((cat) => {
                 const isActive = activeCategory === cat;
@@ -260,7 +326,18 @@ export default function BoothkuPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`filter-pill ${isActive ? "filter-pill-active" : ""}`}
+                    className="font-comic"
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "1.1rem",
+                      cursor: "pointer",
+                      border: "3px solid var(--comic-ink)",
+                      background: isActive ? "var(--comic-red)" : "#ffffff",
+                      color: isActive ? "#ffffff" : "var(--comic-ink)",
+                      boxShadow: isActive ? "4px 4px 0px var(--comic-ink)" : "2px 2px 0px var(--comic-ink)",
+                      transform: isActive ? "translate(-2px, -2px) rotate(-1deg)" : "none",
+                      transition: "all 0.1s ease",
+                    }}
                   >
                     {cat}
                   </button>
@@ -268,12 +345,12 @@ export default function BoothkuPage() {
               })}
             </div>
 
-            {/* Grid of Templates */}
+            {/* Template Gallery in Comic Grid */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                gap: 20,
+                gap: 24,
               }}
             >
               {filteredTemplates.map((tmpl) => (
@@ -285,19 +362,25 @@ export default function BoothkuPage() {
                     setCurrentSlotIndex(0);
                     setStage("camera");
                   }}
-                  className="booth-card"
-                  style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}
+                  className="comic-panel-interactive"
+                  style={{
+                    padding: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 12,
+                    background: "#ffffff",
+                  }}
                 >
                   <div
                     style={{
                       width: "100%",
-                      height: 320,
-                      borderRadius: 8,
-                      background: "var(--bg-canvas)",
+                      height: 310,
+                      background: "#fff8db",
+                      border: "2.5px solid var(--comic-ink)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: 12,
+                      padding: 10,
                     }}
                   >
                     <img
@@ -306,13 +389,25 @@ export default function BoothkuPage() {
                       style={{ width: "100%", height: "100%", objectFit: "contain" }}
                     />
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: "0.98rem" }}>{tmpl.name}</div>
-                      <div style={{ fontSize: "0.78rem", color: "var(--ink-muted)", marginTop: 2 }}>{tmpl.category}</div>
+                      <div className="font-comic" style={{ fontSize: "1.25rem", lineHeight: 1.1 }}>
+                        {tmpl.name}
+                      </div>
+                      <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#666", textTransform: "uppercase" }}>
+                        {tmpl.category}
+                      </div>
                     </div>
-                    <span style={{ fontSize: "0.76rem", fontWeight: 600, color: "var(--ink-secondary)", border: "1px solid var(--border-line)", padding: "3px 8px", borderRadius: 6 }}>
-                      {tmpl.requiredPhotos} frame
+                    <span
+                      className="comic-sticker"
+                      style={{
+                        background: "var(--comic-yellow)",
+                        fontSize: "0.85rem",
+                        padding: "2px 8px",
+                      }}
+                    >
+                      {tmpl.requiredPhotos} SHOTS
                     </span>
                   </div>
                 </div>
@@ -321,40 +416,44 @@ export default function BoothkuPage() {
           </div>
         )}
 
-        {/* STAGE 2: CAMERA VIEW */}
+        {/* STAGE 2: COMIC VIEWFINDER CAMERA */}
         {stage === "camera" && (
-          <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ maxWidth: 840, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+            {/* Top Bar Navigation */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <button onClick={() => setStage("select-template")} className="btn-outline">
-                <ChevronLeft size={16} />
-                <span>Kembali</span>
+              <button onClick={() => setStage("select-template")} className="comic-btn-white">
+                <ChevronLeft size={18} />
+                <span>KEMBALI</span>
               </button>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: 700, fontSize: "1.05rem" }}>{selectedTemplate.name}</div>
-                <div style={{ fontSize: "0.82rem", color: "var(--ink-muted)" }}>
-                  Foto {capturedPhotos.length + 1} dari {selectedTemplate.requiredPhotos}
-                </div>
+
+              <div
+                className="comic-panel"
+                style={{ padding: "6px 20px", background: "var(--comic-yellow)", textAlign: "center" }}
+              >
+                <span className="font-comic" style={{ fontSize: "1.4rem" }}>
+                  {selectedTemplate.name}: SHOT {capturedPhotos.length + 1} / {selectedTemplate.requiredPhotos}
+                </span>
               </div>
+
               <button
                 onClick={() => setFacingMode((prev) => (prev === "user" ? "environment" : "user"))}
-                className="btn-outline"
-                style={{ padding: "10px 12px" }}
+                className="comic-btn-yellow"
                 title="Putar Kamera"
               >
-                <RefreshCw size={16} />
+                <RefreshCw size={18} />
               </button>
             </div>
 
-            {/* Video Box */}
+            {/* Video Viewfinder with Comic Frame */}
             <div
+              className="comic-panel"
               style={{
                 position: "relative",
                 width: "100%",
                 aspectRatio: "4/3",
-                borderRadius: 14,
                 overflow: "hidden",
-                background: "var(--bg-dark-viewport)",
-                border: "1px solid var(--border-dark)",
+                background: "#000000",
+                boxShadow: "8px 8px 0px var(--comic-ink)",
               }}
             >
               <video
@@ -373,6 +472,7 @@ export default function BoothkuPage() {
 
               <div className={`flash-overlay ${isFlashActive ? "flash-active" : ""}`} />
 
+              {/* Huge Comic Countdown */}
               {countdownTimer !== null && (
                 <div
                   style={{
@@ -381,86 +481,90 @@ export default function BoothkuPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "rgba(0, 0, 0, 0.4)",
+                    background: "rgba(0, 0, 0, 0.45)",
                     zIndex: 40,
                   }}
                 >
-                  <span className="viewfinder-countdown">{countdownTimer}</span>
+                  <span className="comic-countdown">{countdownTimer}</span>
                 </div>
               )}
 
-              {/* Progress counter dots */}
+              {/* Comic Shots Progress Indicator */}
               <div
                 style={{
                   position: "absolute",
-                  bottom: 18,
+                  bottom: 16,
                   left: "50%",
                   transform: "translateX(-50%)",
                   display: "flex",
-                  gap: 8,
+                  gap: 10,
+                  background: "#ffffff",
+                  border: "3px solid var(--comic-ink)",
+                  boxShadow: "3px 3px 0px var(--comic-ink)",
                   padding: "6px 14px",
-                  borderRadius: 20,
-                  background: "rgba(0, 0, 0, 0.7)",
                 }}
               >
                 {Array.from({ length: selectedTemplate.requiredPhotos }).map((_, idx) => (
                   <div
                     key={idx}
                     style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
+                      width: 14,
+                      height: 14,
+                      border: "2px solid var(--comic-ink)",
                       background: idx < capturedPhotos.length
-                        ? "#ffffff"
+                        ? "var(--comic-red)"
                         : idx === capturedPhotos.length
-                        ? "var(--accent-terracotta)"
-                        : "rgba(255, 255, 255, 0.3)",
+                        ? "var(--comic-yellow)"
+                        : "#ffffff",
+                      transform: idx === capturedPhotos.length ? "scale(1.2)" : "none",
                     }}
                   />
                 ))}
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+            {/* Shutter Button */}
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 6 }}>
               <button
                 onClick={triggerCapture}
                 disabled={isCountingDown}
-                className="btn-solid-primary"
-                style={{ padding: "14px 44px", fontSize: "1rem" }}
+                className="comic-btn-red"
+                style={{ fontSize: "1.7rem", padding: "16px 54px" }}
               >
-                <Camera size={18} />
-                <span>{isCountingDown ? "Bersiap..." : "Ambil Foto"}</span>
+                <Camera size={26} />
+                <span>{isCountingDown ? "SIAP-SIAP..." : "JEPRET FOTO!"}</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* STAGE 3: REVIEW & EXPORT */}
+        {/* STAGE 3: COMIC REVIEW & PRINT */}
         {stage === "review" && (
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "minmax(0, 1.2fr) 380px",
-              gap: 36,
+              gridTemplateColumns: "minmax(0, 1.25fr) 400px",
+              gap: 32,
               alignItems: "start",
             }}
           >
-            {/* Photostrip View */}
+            {/* Photostrip View in Comic Box */}
             <div
+              className="comic-panel"
               style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border-line)",
-                borderRadius: 14,
                 padding: 24,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 minHeight: 520,
+                background: "#ffffff",
               }}
             >
               {isRendering ? (
-                <div style={{ textAlign: "center", color: "var(--ink-muted)", fontSize: "0.92rem" }}>
-                  Memproses lembar cetak photostrip...
+                <div style={{ textAlign: "center" }}>
+                  <div className="comic-sticker" style={{ fontSize: "1.4rem", background: "var(--comic-yellow)" }}>
+                    PROSES CETAK STRIP...
+                  </div>
                 </div>
               ) : finalResultUrl ? (
                 <img
@@ -469,35 +573,37 @@ export default function BoothkuPage() {
                   style={{
                     maxHeight: "76vh",
                     width: "auto",
-                    borderRadius: 8,
-                    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.12)",
+                    border: "3.5px solid var(--comic-ink)",
+                    boxShadow: "6px 6px 0px var(--comic-ink)",
                   }}
                 />
               ) : null}
             </div>
 
-            {/* Adjustments Sidebar */}
+            {/* Sidebar Controls */}
             <div
+              className="comic-panel"
               style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border-line)",
-                borderRadius: 14,
                 padding: 24,
                 display: "flex",
                 flexDirection: "column",
                 gap: 20,
+                background: "#ffffff",
               }}
             >
-              <div>
-                <h3 className="font-display" style={{ fontSize: "1.2rem", fontWeight: 800 }}>Pilihan Warna & Filter</h3>
-                <p style={{ fontSize: "0.82rem", color: "var(--ink-muted)", marginTop: 2 }}>
-                  Sentuhan akhir untuk hasil foto terbaikmu.
-                </p>
+              <div style={{ borderBottom: "3px solid var(--comic-ink)", paddingBottom: 14 }}>
+                <span className="comic-sticker" style={{ background: "var(--comic-red)", color: "#ffffff", fontSize: "0.85rem" }}>
+                  STUDIO LAB
+                </span>
+                <h3 className="font-comic" style={{ fontSize: "1.8rem", margin: "6px 0 0" }}>
+                  EDIT WARNA STRIP
+                </h3>
               </div>
 
+              {/* Filter selection */}
               <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 8 }}>
-                  Gaya Filter:
+                <label className="font-comic" style={{ display: "block", fontSize: "1.1rem", marginBottom: 6 }}>
+                  FILTER MOOD:
                 </label>
                 <select
                   value={activeFilter}
@@ -505,13 +611,12 @@ export default function BoothkuPage() {
                   style={{
                     width: "100%",
                     padding: "10px 12px",
-                    borderRadius: 8,
-                    border: "1px solid var(--border-line)",
-                    background: "var(--bg-canvas)",
-                    color: "var(--ink-primary)",
-                    fontWeight: 600,
-                    fontSize: "0.88rem",
+                    border: "3px solid var(--comic-ink)",
+                    boxShadow: "3px 3px 0px var(--comic-ink)",
+                    fontWeight: 800,
+                    fontSize: "0.95rem",
                     outline: "none",
+                    background: "var(--comic-bg)",
                   }}
                 >
                   {FILTERS.map((f) => (
@@ -522,11 +627,12 @@ export default function BoothkuPage() {
                 </select>
               </div>
 
+              {/* Tuning sliders */}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
-                    <span>Brightness</span>
-                    <span style={{ color: "var(--ink-muted)" }}>{brightness}%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "0.85rem" }}>
+                    <span>BRIGHTNESS</span>
+                    <span>{brightness}%</span>
                   </div>
                   <input
                     type="range"
@@ -538,9 +644,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
-                    <span>Contrast</span>
-                    <span style={{ color: "var(--ink-muted)" }}>{contrast}%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "0.85rem" }}>
+                    <span>CONTRAST</span>
+                    <span>{contrast}%</span>
                   </div>
                   <input
                     type="range"
@@ -552,9 +658,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
-                    <span>Saturation</span>
-                    <span style={{ color: "var(--ink-muted)" }}>{saturation}%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "0.85rem" }}>
+                    <span>SATURATION</span>
+                    <span>{saturation}%</span>
                   </div>
                   <input
                     type="range"
@@ -566,9 +672,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
-                    <span>Warmth</span>
-                    <span style={{ color: "var(--ink-muted)" }}>{warmth}%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "0.85rem" }}>
+                    <span>WARMTH</span>
+                    <span>{warmth}%</span>
                   </div>
                   <input
                     type="range"
@@ -580,15 +686,16 @@ export default function BoothkuPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+              {/* Action Buttons */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}>
                 <button
                   onClick={handleDownload}
                   disabled={!finalResultUrl || isRendering}
-                  className="btn-solid-primary"
-                  style={{ width: "100%" }}
+                  className="comic-btn-red"
+                  style={{ width: "100%", padding: "14px" }}
                 >
-                  <Download size={16} />
-                  <span>Download Photostrip PNG</span>
+                  <Download size={20} />
+                  <span>SIMPAN STRIP (PNG)</span>
                 </button>
 
                 <button
@@ -597,11 +704,11 @@ export default function BoothkuPage() {
                     setCurrentSlotIndex(0);
                     setStage("camera");
                   }}
-                  className="btn-outline"
+                  className="comic-btn-white"
                   style={{ width: "100%" }}
                 >
-                  <RotateCcw size={15} />
-                  <span>Ulangi Sesi Foto</span>
+                  <RotateCcw size={18} />
+                  <span>FOTO ULANG FRAME INI</span>
                 </button>
               </div>
             </div>
