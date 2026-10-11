@@ -200,6 +200,7 @@ export default function BoothkuPage() {
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       {/* COMIC STRIP HEADER */}
       <header
+        className="comic-header-responsive"
         style={{
           background: "var(--comic-yellow)",
           borderBottom: "4px solid var(--comic-ink)",
@@ -540,14 +541,7 @@ export default function BoothkuPage() {
 
         {/* STAGE 3: COMIC REVIEW & PRINT */}
         {stage === "review" && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(0, 1.25fr) 400px",
-              gap: 32,
-              alignItems: "start",
-            }}
-          >
+          <div className="comic-review-grid">
             {/* Photostrip View in Comic Box */}
             <div
               className="comic-panel"

@@ -234,3 +234,32 @@ input[type="range"]::-webkit-slider-thumb {
   50% { transform: scale(1.15) rotate(4deg); }
   100% { transform: scale(1) rotate(-4deg); }
 }
+
+/* Responsive Grid for Review Stage */
+.comic-review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) 400px;
+  gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .comic-review-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .comic-header-responsive {
+    padding: 10px 14px !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .comic-btn-red {
+    font-size: 1.25rem !important;
+    padding: 12px 24px !important;
+  }
+  .comic-countdown {
+    font-size: 6.5rem !important;
+  }
+}
