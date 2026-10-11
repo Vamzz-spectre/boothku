@@ -2,23 +2,16 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { TEMPLATES, Template } from "@/data/templates";
-import { FILTERS, FilterOption } from "@/data/filters";
+import { FILTERS } from "@/data/filters";
 import { renderPhotostrip, RenderOptions } from "@/utils/canvas";
 import {
   Camera,
   RotateCcw,
-  Sparkles,
   Download,
-  Sliders,
   ChevronLeft,
-  ChevronRight,
   RefreshCw,
-  Layers,
-  Image as ImageIcon,
-  CheckCircle,
-  Flame,
-  LayoutGrid,
-  Zap,
+  Sliders,
+  Check,
 } from "lucide-react";
 
 type Stage = "select-template" | "camera" | "review";
@@ -30,13 +23,12 @@ export default function BoothkuPage() {
   const [currentSlotIndex, setCurrentSlotIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  // Filter & Color adjustment state
+  // Filter & Color adjustments
   const [activeFilter, setActiveFilter] = useState<string>("normal");
   const [brightness, setBrightness] = useState<number>(0);
   const [contrast, setContrast] = useState<number>(0);
   const [saturation, setSaturation] = useState<number>(0);
   const [warmth, setWarmth] = useState<number>(0);
-  const [vignette, setVignette] = useState<number>(0);
 
   // Camera settings
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
@@ -51,14 +43,12 @@ export default function BoothkuPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Kategori template
   const categories = ["All", ...Array.from(new Set(TEMPLATES.map((t) => t.category)))];
 
   const filteredTemplates = activeCategory === "All"
     ? TEMPLATES
     : TEMPLATES.filter((t) => t.category === activeCategory);
 
-  // Initialize camera when entering camera stage
   const startCamera = useCallback(async () => {
     try {
       if (streamRef.current) {
@@ -78,7 +68,7 @@ export default function BoothkuPage() {
       }
     } catch (err) {
       console.error("Camera access error:", err);
-      alert("Gagal membuka kamera. Pastikan izin akses kamera sudah diberikan!");
+      alert("Izin akses kamera diperlukan untuk mengambil foto.");
     }
   }, [facingMode]);
 
@@ -103,7 +93,6 @@ export default function BoothkuPage() {
     };
   }, [stage, startCamera, stopCamera]);
 
-  // Handle snap photo
   const takeSnapshot = useCallback(() => {
     if (!videoRef.current) return;
     const video = videoRef.current;
@@ -118,18 +107,15 @@ export default function BoothkuPage() {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const photoUrl = canvas.toDataURL("image/jpeg", 0.92);
+    const photoUrl = canvas.toDataURL("image/jpeg", 0.94);
 
-    // Flash effect
     setIsFlashActive(true);
-    setTimeout(() => setIsFlashActive(false), 120);
+    setTimeout(() => setIsFlashActive(false), 100);
 
     setCapturedPhotos((prev) => {
       const next = [...prev, photoUrl];
       if (next.length >= selectedTemplate.requiredPhotos) {
-        setTimeout(() => {
-          setStage("review");
-        }, 500);
+        setTimeout(() => setStage("review"), 350);
       } else {
         setCurrentSlotIndex(next.length);
       }
@@ -137,7 +123,6 @@ export default function BoothkuPage() {
     });
   }, [facingMode, selectedTemplate.requiredPhotos]);
 
-  // Start countdown before shooting
   const triggerCapture = () => {
     if (isCountingDown) return;
     setIsCountingDown(true);
@@ -157,7 +142,6 @@ export default function BoothkuPage() {
     }, 1000);
   };
 
-  // Re-render photostrip result
   useEffect(() => {
     if (stage !== "review" || capturedPhotos.length < selectedTemplate.requiredPhotos) return;
 
@@ -170,7 +154,7 @@ export default function BoothkuPage() {
       contrast,
       saturation,
       warmth,
-      vignette,
+      vignette: 0,
     };
 
     renderPhotostrip(selectedTemplate, capturedPhotos, options)
@@ -181,14 +165,14 @@ export default function BoothkuPage() {
         }
       })
       .catch((err) => {
-        console.error("Gagal render final:", err);
+        console.error("Gagal render:", err);
         if (isSubscribed) setIsRendering(false);
       });
 
     return () => {
       isSubscribed = false;
     };
-  }, [stage, capturedPhotos, selectedTemplate, activeFilter, brightness, contrast, saturation, warmth, vignette]);
+  }, [stage, capturedPhotos, selectedTemplate, activeFilter, brightness, contrast, saturation, warmth]);
 
   const resetAll = () => {
     setCapturedPhotos([]);
@@ -201,7 +185,7 @@ export default function BoothkuPage() {
     if (!finalResultUrl) return;
     const a = document.createElement("a");
     a.href = finalResultUrl;
-    a.download = `boothku-${selectedTemplate.id}-${Date.now()}.png`;
+    a.download = `boothku-${selectedTemplate.id}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -214,179 +198,69 @@ export default function BoothkuPage() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* NAVBAR MODERN STUDIO */}
+      {/* Editorial Header */}
       <header
         style={{
-          height: 72,
-          padding: "0 24px",
+          borderBottom: "1px solid var(--border-line)",
+          background: "var(--bg-surface)",
+          padding: "16px 28px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: "rgba(9, 13, 22, 0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
           position: "sticky",
           top: 0,
           zIndex: 100,
         }}
       >
         <div
-          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
           onClick={resetAll}
+          style={{ display: "flex", alignItems: "baseline", gap: 10, cursor: "pointer" }}
         >
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              background: "var(--primary-gradient)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 0 20px rgba(244, 63, 94, 0.5)",
-            }}
-          >
-            <Camera size={22} color="#ffffff" />
-          </div>
-          <div>
-            <span
-              style={{
-                fontSize: "1.35rem",
-                fontWeight: 800,
-                letterSpacing: "-0.5px",
-                color: "#ffffff",
-              }}
-            >
-              Booth<span className="text-gradient">ku</span>
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontSize: "0.68rem",
-                fontWeight: 600,
-                letterSpacing: "1.5px",
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-                marginTop: -3,
-              }}
-            >
-              Virtual Studio AI
-            </span>
-          </div>
+          <span className="font-display" style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--ink-primary)" }}>
+            Boothku.
+          </span>
+          <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Self Photo Studio
+          </span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {stage !== "select-template" && (
-            <button
-              onClick={resetAll}
-              className="btn-glass"
-            >
+            <button onClick={resetAll} className="btn-outline">
               <RotateCcw size={15} />
               <span>Ganti Frame</span>
             </button>
           )}
-
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 12px",
-              borderRadius: 999,
-              background: "rgba(244, 63, 94, 0.12)",
-              border: "1px solid rgba(244, 63, 94, 0.3)",
-              fontSize: "0.78rem",
-              fontWeight: 700,
-              color: "#fb7185",
-            }}
-          >
-            <Zap size={14} />
-            <span>Gratis & Unlimited</span>
-          </div>
+          <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--ink-secondary)", background: "var(--bg-surface-soft)", padding: "6px 12px", borderRadius: 8 }}>
+            27 Template Pilihan
+          </span>
         </div>
       </header>
 
-      {/* CONTENT AREA */}
-      <div style={{ flex: 1, padding: "28px 20px 60px", maxWidth: 1280, margin: "0 auto", width: "100%" }}>
+      {/* Main Container */}
+      <div style={{ flex: 1, padding: "36px 24px 60px", maxWidth: 1200, margin: "0 auto", width: "100%" }}>
         
         {/* STAGE 1: TEMPLATE GALLERY */}
         {stage === "select-template" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-            {/* Hero Header */}
-            <div style={{ textAlign: "center", padding: "20px 0 10px" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "6px 16px",
-                  borderRadius: 999,
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  color: "#cbd5e1",
-                  marginBottom: 12,
-                }}
-              >
-                <Flame size={15} color="#f43f5e" />
-                <span>Next-Gen Online Photobooth Experience</span>
-              </div>
-              <h1
-                style={{
-                  fontSize: "clamp(2rem, 5vw, 3rem)",
-                  fontWeight: 800,
-                  letterSpacing: "-1px",
-                  color: "#ffffff",
-                  lineHeight: 1.15,
-                  marginBottom: 12,
-                }}
-              >
-                Tangkap Momen Terbaikmu Bersama{" "}
-                <span className="text-gradient">Boothku</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+            <div style={{ maxWidth: 640 }}>
+              <h1 className="font-display" style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: 12 }}>
+                Pilih layout strip foto favoritmu.
               </h1>
-              <p
-                style={{
-                  color: "var(--text-secondary)",
-                  maxWidth: 620,
-                  margin: "0 auto",
-                  fontSize: "1rem",
-                  lineHeight: 1.6,
-                }}
-              >
-                Pilih dari 27 template studio kekinian (Y2K, Aesthetic Korean, Vintage News, Spotify, dll). Langsung foto pakai kamera HP atau laptop!
+              <p style={{ color: "var(--ink-secondary)", fontSize: "0.98rem", lineHeight: 1.6 }}>
+                Mulai sesi pemotretan langsung dari browser. Semua template siap pakai dengan format cetak photostrip beresolusi tinggi.
               </p>
             </div>
 
-            {/* Category Filter Chips */}
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                overflowX: "auto",
-                padding: "4px 2px",
-                justifyContent: "center",
-                flexWrap: "wrap",
-              }}
-            >
+            {/* Category Filter Pills */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {categories.map((cat) => {
                 const isActive = activeCategory === cat;
                 return (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    style={{
-                      padding: "8px 18px",
-                      borderRadius: 999,
-                      fontSize: "0.86rem",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      border: isActive ? "none" : "1px solid rgba(255, 255, 255, 0.1)",
-                      background: isActive ? "var(--primary-gradient)" : "rgba(255, 255, 255, 0.05)",
-                      color: isActive ? "#ffffff" : "var(--text-secondary)",
-                      boxShadow: isActive ? "0 4px 16px rgba(244, 63, 94, 0.4)" : "none",
-                    }}
+                    className={`filter-pill ${isActive ? "filter-pill-active" : ""}`}
                   >
                     {cat}
                   </button>
@@ -394,120 +268,93 @@ export default function BoothkuPage() {
               })}
             </div>
 
-            {/* Template Grid */}
+            {/* Grid of Templates */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                gap: 24,
-                width: "100%",
-                paddingTop: 10,
+                gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+                gap: 20,
               }}
             >
-              {filteredTemplates.map((tmpl) => {
-                return (
+              {filteredTemplates.map((tmpl) => (
+                <div
+                  key={tmpl.id}
+                  onClick={() => {
+                    setSelectedTemplate(tmpl);
+                    setCapturedPhotos([]);
+                    setCurrentSlotIndex(0);
+                    setStage("camera");
+                  }}
+                  className="booth-card"
+                  style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}
+                >
                   <div
-                    key={tmpl.id}
-                    onClick={() => {
-                      setSelectedTemplate(tmpl);
-                      setCapturedPhotos([]);
-                      setCurrentSlotIndex(0);
-                      setStage("camera");
-                    }}
-                    className="glass-panel-interactive"
                     style={{
-                      padding: 16,
+                      width: "100%",
+                      height: 320,
+                      borderRadius: 8,
+                      background: "var(--bg-canvas)",
                       display: "flex",
-                      flexDirection: "column",
-                      gap: 14,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 12,
                     }}
                   >
-                    <div
-                      style={{
-                        width: "100%",
-                        height: 330,
-                        borderRadius: 14,
-                        overflow: "hidden",
-                        background: "rgba(0, 0, 0, 0.35)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 10,
-                      }}
-                    >
-                      <img
-                        src={tmpl.imageSrc}
-                        alt={tmpl.name}
-                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                      />
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div>
-                        <div style={{ fontWeight: 800, fontSize: "1.05rem", color: "#ffffff" }}>{tmpl.name}</div>
-                        <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: 2 }}>
-                          {tmpl.category}
-                        </div>
-                      </div>
-                      <span
-                        style={{
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          padding: "4px 10px",
-                          borderRadius: 8,
-                          background: "rgba(255, 255, 255, 0.08)",
-                          color: "#38bdf8",
-                          border: "1px solid rgba(56, 189, 248, 0.2)",
-                        }}
-                      >
-                        {tmpl.requiredPhotos} Shots
-                      </span>
-                    </div>
+                    <img
+                      src={tmpl.imageSrc}
+                      alt={tmpl.name}
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
                   </div>
-                );
-              })}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: "0.98rem" }}>{tmpl.name}</div>
+                      <div style={{ fontSize: "0.78rem", color: "var(--ink-muted)", marginTop: 2 }}>{tmpl.category}</div>
+                    </div>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 600, color: "var(--ink-secondary)", border: "1px solid var(--border-line)", padding: "3px 8px", borderRadius: 6 }}>
+                      {tmpl.requiredPhotos} frame
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* STAGE 2: LIVE CAMERA VIEW */}
+        {/* STAGE 2: CAMERA VIEW */}
         {stage === "camera" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "center", maxWidth: 840, margin: "0 auto" }}>
-            {/* Top Bar Controls */}
-            <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-              <button
-                onClick={() => setStage("select-template")}
-                className="btn-glass"
-              >
+          <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <button onClick={() => setStage("select-template")} className="btn-outline">
                 <ChevronLeft size={16} />
-                <span>Pilih Template</span>
+                <span>Kembali</span>
               </button>
               <div style={{ textAlign: "center" }}>
-                <span style={{ fontWeight: 800, fontSize: "1.2rem", color: "#ffffff" }}>{selectedTemplate.name}</span>
-                <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: 2 }}>
-                  Shot {capturedPhotos.length + 1} of {selectedTemplate.requiredPhotos}
+                <div style={{ fontWeight: 700, fontSize: "1.05rem" }}>{selectedTemplate.name}</div>
+                <div style={{ fontSize: "0.82rem", color: "var(--ink-muted)" }}>
+                  Foto {capturedPhotos.length + 1} dari {selectedTemplate.requiredPhotos}
                 </div>
               </div>
               <button
                 onClick={() => setFacingMode((prev) => (prev === "user" ? "environment" : "user"))}
-                className="btn-glass"
-                title="Switch Camera"
+                className="btn-outline"
+                style={{ padding: "10px 12px" }}
+                title="Putar Kamera"
               >
-                <RefreshCw size={18} />
+                <RefreshCw size={16} />
               </button>
             </div>
 
-            {/* Video Viewfinder Container */}
+            {/* Video Box */}
             <div
-              className="glass-panel"
               style={{
                 position: "relative",
                 width: "100%",
                 aspectRatio: "4/3",
-                borderRadius: 28,
+                borderRadius: 14,
                 overflow: "hidden",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                background: "#000",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6)",
+                background: "var(--bg-dark-viewport)",
+                border: "1px solid var(--border-dark)",
               }}
             >
               <video
@@ -524,10 +371,8 @@ export default function BoothkuPage() {
                 }}
               />
 
-              {/* Flash overlay */}
               <div className={`flash-overlay ${isFlashActive ? "flash-active" : ""}`} />
 
-              {/* Countdown overlay */}
               {countdownTimer !== null && (
                 <div
                   style={{
@@ -536,158 +381,152 @@ export default function BoothkuPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "rgba(0, 0, 0, 0.45)",
-                    backdropFilter: "blur(8px)",
+                    background: "rgba(0, 0, 0, 0.4)",
                     zIndex: 40,
                   }}
                 >
-                  <span className="countdown-number">{countdownTimer}</span>
+                  <span className="viewfinder-countdown">{countdownTimer}</span>
                 </div>
               )}
 
-              {/* Slot Indicator Pills */}
+              {/* Progress counter dots */}
               <div
                 style={{
                   position: "absolute",
-                  bottom: 20,
+                  bottom: 18,
                   left: "50%",
                   transform: "translateX(-50%)",
                   display: "flex",
                   gap: 8,
-                  padding: "8px 16px",
-                  borderRadius: 999,
-                  background: "rgba(0, 0, 0, 0.65)",
-                  backdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  padding: "6px 14px",
+                  borderRadius: 20,
+                  background: "rgba(0, 0, 0, 0.7)",
                 }}
               >
                 {Array.from({ length: selectedTemplate.requiredPhotos }).map((_, idx) => (
                   <div
                     key={idx}
                     style={{
-                      width: 12,
-                      height: 12,
+                      width: 8,
+                      height: 8,
                       borderRadius: "50%",
                       background: idx < capturedPhotos.length
-                        ? "#10b981"
+                        ? "#ffffff"
                         : idx === capturedPhotos.length
-                        ? "#f43f5e"
-                        : "rgba(255, 255, 255, 0.2)",
-                      transition: "all 0.2s ease",
-                      transform: idx === capturedPhotos.length ? "scale(1.25)" : "scale(1)",
+                        ? "var(--accent-terracotta)"
+                        : "rgba(255, 255, 255, 0.3)",
                     }}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Capture Trigger Button */}
-            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
               <button
                 onClick={triggerCapture}
                 disabled={isCountingDown}
-                className="btn-glow-primary"
-                style={{ padding: "16px 40px", fontSize: "1.1rem" }}
+                className="btn-solid-primary"
+                style={{ padding: "14px 44px", fontSize: "1rem" }}
               >
-                <Camera size={22} />
-                <span>{isCountingDown ? "Bersiap..." : "Ambil Foto (3s)"}</span>
+                <Camera size={18} />
+                <span>{isCountingDown ? "Bersiap..." : "Ambil Foto"}</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* STAGE 3: REVIEW & STUDIO ADJUSTMENT */}
+        {/* STAGE 3: REVIEW & EXPORT */}
         {stage === "review" && (
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "minmax(0, 1.25fr) 420px",
-              gap: 32,
+              gridTemplateColumns: "minmax(0, 1.2fr) 380px",
+              gap: 36,
               alignItems: "start",
             }}
           >
-            {/* Photostrip Preview Display */}
+            {/* Photostrip View */}
             <div
-              className="glass-panel"
               style={{
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-line)",
+                borderRadius: 14,
                 padding: 24,
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 minHeight: 520,
               }}
             >
               {isRendering ? (
-                <div style={{ textAlign: "center", color: "var(--text-secondary)" }}>
-                  <Sparkles size={36} color="#f43f5e" style={{ animation: "pulseScale 1s infinite" }} />
-                  <div style={{ marginTop: 12, fontWeight: 700, color: "#ffffff" }}>Merender Photostrip HD...</div>
+                <div style={{ textAlign: "center", color: "var(--ink-muted)", fontSize: "0.92rem" }}>
+                  Memproses lembar cetak photostrip...
                 </div>
               ) : finalResultUrl ? (
                 <img
                   src={finalResultUrl}
-                  alt="Photostrip Hasil"
+                  alt="Hasil Photostrip"
                   style={{
-                    maxHeight: "75vh",
+                    maxHeight: "76vh",
                     width: "auto",
-                    borderRadius: 16,
-                    boxShadow: "0 25px 60px rgba(0, 0, 0, 0.7)",
+                    borderRadius: 8,
+                    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.12)",
                   }}
                 />
               ) : null}
             </div>
 
-            {/* Studio Tools & Color Tuning */}
+            {/* Adjustments Sidebar */}
             <div
-              className="glass-panel"
               style={{
-                padding: 28,
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border-line)",
+                borderRadius: 14,
+                padding: 24,
                 display: "flex",
                 flexDirection: "column",
                 gap: 20,
               }}
             >
-              <div style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: 16 }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#ffffff" }}>Studio Retouch</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: 2 }}>
-                  Sesuaikan tone & warna foto sesukamu
+              <div>
+                <h3 className="font-display" style={{ fontSize: "1.2rem", fontWeight: 800 }}>Pilihan Warna & Filter</h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--ink-muted)", marginTop: 2 }}>
+                  Sentuhan akhir untuk hasil foto terbaikmu.
                 </p>
               </div>
 
-              {/* Mood Filter Select */}
               <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "var(--text-secondary)", marginBottom: 8 }}>
-                  Filter Estetik:
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 8 }}>
+                  Gaya Filter:
                 </label>
                 <select
                   value={activeFilter}
                   onChange={(e) => setActiveFilter(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: 14,
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    color: "#ffffff",
+                    padding: "10px 12px",
+                    borderRadius: 8,
+                    border: "1px solid var(--border-line)",
+                    background: "var(--bg-canvas)",
+                    color: "var(--ink-primary)",
                     fontWeight: 600,
-                    fontSize: "0.9rem",
+                    fontSize: "0.88rem",
                     outline: "none",
                   }}
                 >
                   {FILTERS.map((f) => (
-                    <option key={f.id} value={f.id} style={{ background: "#0f172a", color: "#ffffff" }}>
-                      {f.name} — {f.desc}
+                    <option key={f.id} value={f.id}>
+                      {f.name} ({f.desc})
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Sliders */}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
                     <span>Brightness</span>
-                    <span>{brightness}%</span>
+                    <span style={{ color: "var(--ink-muted)" }}>{brightness}%</span>
                   </div>
                   <input
                     type="range"
@@ -699,9 +538,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
                     <span>Contrast</span>
-                    <span>{contrast}%</span>
+                    <span style={{ color: "var(--ink-muted)" }}>{contrast}%</span>
                   </div>
                   <input
                     type="range"
@@ -713,9 +552,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
                     <span>Saturation</span>
-                    <span>{saturation}%</span>
+                    <span style={{ color: "var(--ink-muted)" }}>{saturation}%</span>
                   </div>
                   <input
                     type="range"
@@ -727,9 +566,9 @@ export default function BoothkuPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-                    <span>Warmth (Suhu)</span>
-                    <span>{warmth}%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600 }}>
+                    <span>Warmth</span>
+                    <span style={{ color: "var(--ink-muted)" }}>{warmth}%</span>
                   </div>
                   <input
                     type="range"
@@ -741,16 +580,15 @@ export default function BoothkuPage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 10 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
                 <button
                   onClick={handleDownload}
                   disabled={!finalResultUrl || isRendering}
-                  className="btn-glow-primary"
-                  style={{ width: "100%", padding: "14px 20px" }}
+                  className="btn-solid-primary"
+                  style={{ width: "100%" }}
                 >
-                  <Download size={18} />
-                  <span>Download Photostrip (PNG)</span>
+                  <Download size={16} />
+                  <span>Download Photostrip PNG</span>
                 </button>
 
                 <button
@@ -759,11 +597,11 @@ export default function BoothkuPage() {
                     setCurrentSlotIndex(0);
                     setStage("camera");
                   }}
-                  className="btn-glass"
+                  className="btn-outline"
                   style={{ width: "100%" }}
                 >
-                  <RotateCcw size={16} />
-                  <span>Foto Ulang Sesi Ini</span>
+                  <RotateCcw size={15} />
+                  <span>Ulangi Sesi Foto</span>
                 </button>
               </div>
             </div>
