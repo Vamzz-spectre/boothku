@@ -258,33 +258,6 @@ export default function BoothkuPage() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 14px",
-              borderRadius: 10,
-              background: "#ffffff",
-              border: "2px solid var(--neo-black)",
-              fontSize: "0.85rem",
-              fontWeight: 800,
-              boxShadow: "2px 2px 0px var(--neo-black)",
-            }}
-          >
-            <span>Credits:</span>
-            <span
-              style={{
-                background: "var(--neo-primary)",
-                padding: "2px 8px",
-                borderRadius: 6,
-                fontWeight: 900,
-              }}
-            >
-              {credits}/5
-            </span>
-          </div>
-
           {stage !== "select-template" && (
             <button
               onClick={resetAll}
